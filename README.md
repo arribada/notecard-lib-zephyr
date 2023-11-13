@@ -41,3 +41,10 @@ You should ensure the host device you are targetting has this alias defined in i
 ### Example
 
 Coming soon.
+
+## License
+
+This repo is licensed under the [MIT License](LICENSE) and uses the following repos:
+
+- [note-c](https://github.com/blues/note-c) - [MIT License]
+- [note-zephyr](https://github.com/blues/note-zephyr) - [MIT License]
