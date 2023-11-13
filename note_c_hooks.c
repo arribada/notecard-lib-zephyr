@@ -61,7 +61,7 @@ bool note_i2c_reset(uint16_t device_address_)
 	}
 
 	if (!i2c_dev) {
-		i2c_dev = DEVICE_DT_GET(DT_NODELABEL(i2c1));
+		i2c_dev = DEVICE_DT_GET(DT_NODELABEL(notecard));
 	}
 
 	if (!device_is_ready(i2c_dev)) {

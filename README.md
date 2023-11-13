@@ -4,6 +4,10 @@ This repo is a [Zephyr](https://zephyrproject.org/) module required for pulling 
 
 ## Usage
 
+To get started with this module, you will need to add it to your Zephyr project's `west.yml` manifest file and then add the required overlay to your Zephyr project's device tree.
+
+### Manifest
+
 To use this module, add the following to your Zephyr project's `west.yml` manifest file:
 
 ```yaml
@@ -17,3 +21,23 @@ To use this module, add the following to your Zephyr project's `west.yml` manife
 ```
 
 Then, run `west update` to pull the module into your project.
+
+### Overlays
+
+The helper functions are provided from the [note-zephyr](https://github.com/blues/note-zephyr) repo and provide controls to communicate with a Notecard attached to the host via i2c.
+
+As such, the helper functions expect the target device to use a DT alias of `notecard` for the i2c bus.
+You should ensure the host device you are targetting has this alias defined in its DT overlay.
+
+```dts
+/ {
+    aliases {
+        // for example, using the i2c0 bus
+        notecard = &i2c0;
+    };
+};
+```
+
+### Example
+
+Coming soon.
