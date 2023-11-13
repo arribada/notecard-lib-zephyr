@@ -1,7 +1,8 @@
 if(CONFIG_NOTECARD)
   set(NOTE_C_DIR ${ZEPHYR_CURRENT_MODULE_DIR}/note-c)
-  zephyr_include_directories(${NOTE_C_DIR})
+  zephyr_include_directories(. ${NOTE_C_DIR})
   zephyr_library_sources(
+    note_c_hooks.c
     ${NOTE_C_DIR}/n_atof.c
     ${NOTE_C_DIR}/n_atof.c
     ${NOTE_C_DIR}/n_b64.c
