@@ -1,3 +1,4 @@
 [submodule "note-c"]
 	path = note-c
 	url = git@github.com:blues/note-c.git
+	branch = master

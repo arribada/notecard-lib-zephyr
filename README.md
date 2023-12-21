@@ -17,7 +17,7 @@ To use this module, add the following to your Zephyr project's `west.yml` manife
       path: modules/notecard
       revision: main
       submodules: true
-      url: https://github.com/arribada/lib-notecard-zephyr
+      url: https://github.com/blues/note-zephyr
 ```
 
 Then, run `west update` to pull the module into your project.
@@ -40,7 +40,7 @@ You should ensure the host device you are targetting has this alias defined in i
 
 ### Example
 
-Coming soon.
+Included in this repo is a simple example for using the west module to send a note using the Notecard. See the [example](example/README.md) for more details.
 
 ## License
 
