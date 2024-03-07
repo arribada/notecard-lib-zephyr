@@ -22,7 +22,12 @@ jobs:
           west init -l .
           west update -o=--depth=1 -n
 
-      - name: Build example
+      - name: Build i2c example
         run: |
           ls -la
-          west build -b swan_r5 example
+          west build -p -b swan_r5 examples/i2c
+
+      - name: Build serial example
+        run: |
+          ls -la
+          west build -p -b swan_r5 examples/serial
