@@ -1,25 +1,18 @@
 #include "note_c_hooks.h"
 
-#include <zephyr/drivers/i2c.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 
-static const size_t REQUEST_HEADER_SIZE = 2;
+LOG_MODULE_REGISTER(notecard, CONFIG_NOTECARD_LOG_LEVEL);
+
+#ifdef CONFIG_I2C
+
+#include <zephyr/drivers/i2c.h>
 
 const struct device *i2c_dev = NULL;
 bool i2c_initialized = false;
 
-LOG_MODULE_REGISTER(note, LOG_LEVEL_DBG);
-
-uint32_t platform_millis(void)
-{
-	return (uint32_t)k_uptime_get();
-}
-
-void platform_delay(uint32_t ms)
-{
-	k_msleep(ms);
-}
+static const size_t REQUEST_HEADER_SIZE = 2;
 
 const char *note_i2c_receive(uint16_t device_address_, uint8_t *buffer_, uint16_t size_,
 			     uint32_t *available_)
@@ -92,6 +85,112 @@ const char *note_i2c_transmit(uint16_t device_address_, uint8_t *buffer_, uint16
 	} else {
 		return NULL;
 	}
+}
+
+#elif CONFIG_SERIAL
+
+#include <zephyr/drivers/uart.h> 
+#define MSG_SIZE 128
+
+const struct device *serial_dev = NULL;
+bool serial_initialized = false;
+static char rx_buf[MSG_SIZE];
+static int rx_buf_pos;
+static int serial_buf_pos;
+
+void serial_cb(const struct device *dev, void *user_data)
+{
+	uint8_t c;
+
+	if (!uart_irq_update(serial_dev)) {
+		return;
+	}
+
+	if (!uart_irq_rx_ready(serial_dev)) {
+		return;
+	}
+
+	/* read until FIFO empty */
+	while (uart_fifo_read(serial_dev, &c, 1) == 1) {
+		if (rx_buf_pos < (sizeof(rx_buf) - 1)) {
+            rx_buf_pos++;
+			rx_buf[rx_buf_pos] = c;
+		}
+		/* else: characters beyond buffer size are dropped */
+	}
+}
+
+bool note_serial_reset() {
+	if (serial_initialized) {
+		return true;
+	}
+
+	if (!serial_dev) {
+		serial_dev = DEVICE_DT_GET(DT_ALIAS(notecard));
+	}
+
+	if (!device_is_ready(serial_dev)) {
+		LOG_ERR("serial: Device is not ready.\n");
+		return false;
+	}
+
+    int ret = uart_irq_callback_user_data_set(serial_dev, serial_cb, NULL);
+
+	if (ret < 0) {
+		if (ret == -ENOTSUP) {
+			LOG_ERR("Interrupt-driven UART API support not enabled\n");
+		} else if (ret == -ENOSYS) {
+			LOG_ERR("UART device does not support interrupt-driven API\n");
+		} else {
+			LOG_ERR("Error setting UART callback: %d\n", ret);
+		}
+		return false;
+	}
+
+    rx_buf_pos = 0;
+    serial_buf_pos = 1;
+
+	uart_irq_rx_enable(serial_dev);
+	LOG_DBG("serial: Device is ready.\n");
+
+	serial_initialized = true;
+	return true;
+}
+
+void note_serial_transmit(uint8_t *text, size_t len, bool flush){
+	for (int i = 0; i < len; i++) {
+		uart_poll_out(serial_dev, text[i]);
+	}
+}
+
+bool note_serial_available(){
+    if(rx_buf_pos > 0) return true;
+    else return false;
+}
+
+char note_serial_receive(){
+    char serial_buffer = rx_buf[serial_buf_pos];
+
+    if(serial_buf_pos >= rx_buf_pos) {
+        rx_buf_pos = 0;
+        serial_buf_pos = 1;
+    } 
+    else serial_buf_pos++;
+    return serial_buffer;
+}
+
+#else
+#error "No transport method defined, enable CONFIG_I2C or CONFIG_SERIAL."
+#endif
+
+uint32_t platform_millis(void)
+{
+	return (uint32_t)k_uptime_get();
+}
+
+void platform_delay(uint32_t ms)
+{
+	k_msleep(ms);
 }
 
 size_t note_log_print(const char *message_)

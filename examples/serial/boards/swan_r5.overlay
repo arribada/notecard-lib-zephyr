@@ -1,0 +1,12 @@
+/ {
+    aliases {
+        // for example, using the usart1 bus on the Blues Swan Feather Board
+        notecard = &usart1;
+    };
+};
+
+&usart1 {
+    status = "okay";
+    current-speed = <9600>; // the baudrate required for the Notecard
+    pinctrl-names = "default";
+};
