@@ -5,7 +5,7 @@
 
 LOG_MODULE_REGISTER(notecard, CONFIG_NOTECARD_LOG_LEVEL);
 
-#ifdef CONFIG_I2C
+#ifdef CONFIG_NOTECARD_I2C
 
 #include <zephyr/drivers/i2c.h>
 
@@ -87,7 +87,7 @@ const char *note_i2c_transmit(uint16_t device_address_, uint8_t *buffer_, uint16
 	}
 }
 
-#elif CONFIG_SERIAL
+#elif CONFIG_NOTECARD_SERIAL
 
 #include <zephyr/drivers/uart.h> 
 #define MSG_SIZE 128

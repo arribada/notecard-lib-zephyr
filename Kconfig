@@ -5,6 +5,21 @@ config NOTECARD
     help
       Module for controlling blues.io notecard using the note-c library. Requires an device tree alias for the notecard.
 
+config NOTECARD_I2C
+    bool "Enable I2C interface for the Blues Wireless Notecard"
+    default y
+    depends on NOTECARD && I2C
+    depends on !NOTECARD_SERIAL
+    help
+      Enable I2C interface for the Blues Wireless Notecard
+
+config NOTECARD_SERIAL
+    bool "Enable Serial interface for the Blues Wireless Notecard"
+    default n
+    depends on NOTECARD && SERIAL
+    help
+      Enable Serial interface for the Blues Wireless Notecard
+
 module = NOTECARD
 module-str = notecard
 source "subsys/logging/Kconfig.template.log_config"
