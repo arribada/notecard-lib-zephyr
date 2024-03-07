@@ -51,6 +51,24 @@ For example, `serial`:
 };
 ```
 
+### Project Config
+
+Ensure your project's `prj.conf` file includes the following:
+
+For `i2c`:
+```conf
+CONFIG_NOTECARD=y
+CONFIG_NOTECARD_I2C=y
+```
+
+For `serial`:
+```conf
+CONFIG_NOTECARD=y
+CONFIG_NOTECARD_SERIAL=y
+```
+
+> Note: Currently, these options (`i2c` & `serial`) are mutually exclusive as the `note-c` library does not support both protocols simultaneously.
+
 ### Example
 
 Included in this repo is a simple example for using the `west` module to send a note using the Notecard. 
